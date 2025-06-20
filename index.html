@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Signature Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            color: #ffffff;
+            text-align: center;
+            padding: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 200;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            opacity: 0.7;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #a0a0a0;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+            background: #1a1a1a;
+        }
+
+        .form-section {
+            background: #0f0f0f;
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-section h2 {
+            color: #ffffff;
+            margin-bottom: 24px;
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.05);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: #666666;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #ffffff;
+            background: rgba(255,255,255,0.08);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+        }
+
+        .image-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            background: rgba(255,255,255,0.03);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            width: 100%;
+            color: #a0a0a0;
+        }
+
+        .image-upload:hover {
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.06);
+            color: #ffffff;
+        }
+
+        .image-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .preview-section {
+            background: #0f0f0f;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .preview-section h2 {
+            color: #ffffff;
+            margin-bottom: 24px;
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+
+        .signature-preview {
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 24px;
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 24px;
+            min-height: 150px;
+            backdrop-filter: blur(5px);
+        }
+
+        .signature-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .signature-table td {
+            vertical-align: top;
+            padding: 0;
+        }
+
+        .signature-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .signature-info {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+        }
+
+        .signature-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .signature-title {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .signature-company {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .signature-tagline {
+            font-size: 12px;
+            color: #808080;
+            margin-bottom: 8px;
+        }
+
+        .signature-contact {
+            font-size: 13px;
+            color: #e0e0e0;
+        }
+
+        .signature-contact div {
+            margin-bottom: 2px;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #000000;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            width: 100%;
+            letter-spacing: -0.01em;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #ffffff;
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.05);
+            border-left: 4px solid #ffffff;
+            padding: 24px;
+            margin-top: 24px;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .instructions h3 {
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .instructions ol {
+            color: #c0c0c0;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 6px;
+        }
+
+        .instructions strong {
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Email Signature Editor</h1>
+            <p>Create professional email signatures in seconds</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>📝 Signature Details</h2>
+                
+                <div class="form-group">
+                    <label for="imageUpload">Profile Picture</label>
+                    <div class="image-upload">
+                        <input type="file" id="imageUpload" accept="image/*">
+                        <div>📸 Click to upload image</div>
+                        <small>Recommended: 100x100px, JPG/PNG</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" placeholder="John">
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" placeholder="Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Job Title</label>
+                    <input type="text" id="title" placeholder="Senior Developer">
+                </div>
+
+                <div class="form-group">
+                    <label for="company">Company Name</label>
+                    <input type="text" id="company" placeholder="Tech Corp">
+                </div>
+
+                <div class="form-group">
+                    <label for="tagline">Company Tagline</label>
+                    <input type="text" id="tagline" placeholder="Innovation at its finest">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="john.doe@company.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" placeholder="+1 (555) 123-4567">
+                </div>
+
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="url" id="website" placeholder="www.company.com">
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h2>👁️ Live Preview</h2>
+                
+                <div class="signature-preview" id="signaturePreview">
+                    <table class="signature-table">
+                        <tr>
+                            <td style="width: 120px;">
+                                <img id="previewImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik01MCA3MEMzNS4xIDcwIDI0IDU4LjkgMjQgNDRDMjQgMjkuMSAzNS4xIDE4IDUwIDE4QzY0LjkgMTggNzYgMjkuMSA3NiA0NEM3NiA1OC45IDY0LjkgNzAgNTAgNzBaIiBmaWxsPSIjQzlDQUNDIi8+CjxwYXRoIGQ9Ik01MCA0NkMzNy44IDQ2IDI4IDU1LjggMjggNjhIMzZDMzYgNjAgNDIgNTQgNTAgNTRDNTggNTQgNjQgNjAgNjQgNjhINzJDNzIgNTUuOCA2Mi4yIDQ2IDUwIDQ2WiIgZmlsbD0iIzZCNzI4MCIvPgo8L3N2Zz4K" class="signature-image" alt="Profile">
+                            </td>
+                            <td>
+                                <div class="signature-info">
+                                    <div class="signature-name" id="previewName">John Doe</div>
+                                    <div class="signature-title" id="previewTitle" style="display: none;"></div>
+                                    <div class="signature-company" id="previewCompany" style="display: none;"></div>
+                                    <div class="signature-tagline" id="previewTagline" style="display: none;"></div>
+                                    <div class="signature-contact">
+                                        <div id="previewEmail" style="display: none;"></div>
+                                        <div id="previewPhone" style="display: none;"></div>
+                                        <div id="previewWebsite">🌐 www.company.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <button class="copy-btn" id="copyBtn" onclick="copySignature()">
+                    📋 Copy Signature HTML
+                </button>
+
+                <div class="instructions">
+                    <h3>How to use in your email:</h3>
+                    <ol>
+                        <li>Click "Copy Signature HTML" above</li>
+                        <li><strong>Gmail:</strong> Settings → General → Signature → Paste</li>
+                        <li><strong>Outlook:</strong> File → Options → Mail → Signatures → Paste</li>
+                        <li><strong>Apple Mail:</strong> Preferences → Signatures → Paste</li>
+                        <li>Make sure to paste as HTML (Ctrl/Cmd + Shift + V)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <footer style="text-align: center; padding: 30px 40px; border-top: 1px solid rgba(255,255,255,0.1); background: #0a0a0a;">
+            <div style="margin-bottom: 12px;">
+                <a href="https://dee7studio.com" target="_blank" style="color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; transition: opacity 0.2s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+                    Designed by Dee7 Studio
+                </a>
+            </div>
+            <div style="color: #808080; font-size: 14px;" id="copyrightText">
+                <!-- Copyright text will be inserted by JavaScript -->
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let imageDataUrl = null;
+
+        // Form elements
+        const firstName = document.getElementById('firstName');
+        const lastName = document.getElementById('lastName');
+        const title = document.getElementById('title');
+        const company = document.getElementById('company');
+        const tagline = document.getElementById('tagline');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const website = document.getElementById('website');
+        const imageUpload = document.getElementById('imageUpload');
+
+        // Preview elements
+        const previewName = document.getElementById('previewName');
+        const previewTitle = document.getElementById('previewTitle');
+        const previewCompany = document.getElementById('previewCompany');
+        const previewTagline = document.getElementById('previewTagline');
+        const previewEmail = document.getElementById('previewEmail');
+        const previewPhone = document.getElementById('previewPhone');
+        const previewWebsite = document.getElementById('previewWebsite');
+        const previewImage = document.getElementById('previewImage');
+
+        // Update preview in real-time
+        function updatePreview() {
+            const fullName = `${firstName.value} ${lastName.value}`.trim() || 'John Doe';
+            previewName.textContent = fullName;
+            
+            // Title - show/hide based on input
+            if (title.value.trim()) {
+                previewTitle.textContent = title.value;
+                previewTitle.style.display = 'block';
+            } else {
+                previewTitle.style.display = 'none';
+            }
+            
+            // Company - show/hide based on input
+            if (company.value.trim()) {
+                previewCompany.textContent = company.value;
+                previewCompany.style.display = 'block';
+            } else {
+                previewCompany.style.display = 'none';
+            }
+            
+            // Tagline - show/hide based on input
+            if (tagline.value.trim()) {
+                previewTagline.textContent = tagline.value;
+                previewTagline.style.display = 'block';
+            } else {
+                previewTagline.style.display = 'none';
+            }
+            
+            // Email - show/hide based on input
+            if (email.value.trim()) {
+                previewEmail.textContent = `📧 ${email.value}`;
+                previewEmail.style.display = 'block';
+            } else {
+                previewEmail.style.display = 'none';
+            }
+            
+            // Phone - show/hide based on input
+            if (phone.value.trim()) {
+                previewPhone.textContent = `📱 ${phone.value}`;
+                previewPhone.style.display = 'block';
+            } else {
+                previewPhone.style.display = 'none';
+            }
+            
+            // Website - show placeholder or actual value
+            previewWebsite.textContent = website.value.trim() ? `🌐 ${website.value}` : '🌐 www.company.com';
+        }
+
+        // Add event listeners
+        [firstName, lastName, title, company, tagline, email, phone, website].forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+
+        // Handle image upload
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageDataUrl = e.target.result;
+                    previewImage.src = imageDataUrl;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Copy signature to clipboard
+        function copySignature() {
+            const fullName = `${firstName.value} ${lastName.value}`.trim() || 'John Doe';
+            const jobTitle = title.value.trim();
+            const companyName = company.value.trim();
+            const companyTagline = tagline.value.trim();
+            const emailAddr = email.value.trim();
+            const phoneNum = phone.value.trim();
+            const websiteUrl = website.value.trim() || 'www.company.com';
+            const imageSrc = imageDataUrl || previewImage.src;
+
+            let signatureHtml = `
+<table style="border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <tr>
+        <td style="vertical-align: top; padding: 0; width: 120px;">
+            <img src="${imageSrc}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-right: 20px;" alt="Profile">
+        </td>
+        <td style="vertical-align: top; padding: 0;">
+            <div style="line-height: 1.4;">
+                <div style="font-size: 18px; font-weight: 600; color: #000000; margin-bottom: 5px;">${fullName}</div>`;
+
+            // Add optional fields only if they have values
+            if (jobTitle) {
+                signatureHtml += `
+                <div style="font-size: 14px; color: #666666; margin-bottom: 8px; font-style: italic;">${jobTitle}</div>`;
+            }
+
+            if (companyName) {
+                signatureHtml += `
+                <div style="font-size: 16px; font-weight: 600; color: #000000; margin-bottom: 3px;">${companyName}</div>`;
+            }
+
+            if (companyTagline) {
+                signatureHtml += `
+                <div style="font-size: 12px; color: #888888; margin-bottom: 8px;">${companyTagline}</div>`;
+            }
+
+            signatureHtml += `
+                <div style="font-size: 13px; color: #333333;">`;
+
+            if (emailAddr) {
+                signatureHtml += `
+                    <div style="margin-bottom: 2px;">📧 ${emailAddr}</div>`;
+            }
+
+            if (phoneNum) {
+                signatureHtml += `
+                    <div style="margin-bottom: 2px;">📱 ${phoneNum}</div>`;
+            }
+
+            signatureHtml += `
+                    <div style="margin-bottom: 2px;">🌐 ${websiteUrl}</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>`;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(signatureHtml).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy Signature HTML';
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy to clipboard. Please try again.');
+            });
+        }
+
+        // Initialize preview
+        updatePreview();
+
+        // Set copyright text with current year
+        function setCopyrightText() {
+            const currentYear = new Date().getFullYear();
+            const copyrightElement = document.getElementById('copyrightText');
+            copyrightElement.innerHTML = `Copyright ${currentYear} • Designed with ❤️ by Dee7 Studio`;
+        }
+
+        // Set copyright on page load
+        setCopyrightText();
+    </script>
+</body>
+</html>
